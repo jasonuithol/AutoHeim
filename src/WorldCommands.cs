@@ -25,33 +25,23 @@ namespace AutoHeim
         private static IEnumerator Nearby(Ctx c)
         {
             var p = NeedPlayer();
-            float radius = c.Float("radius", 30f);
-            int limit = c.Int("limit", 40);
-            string name = c.Str("name");
             var kinds = new HashSet<string>((c.Str("kinds") ?? "characters,items,interactables,pieces").Split(',').Select(k => k.Trim()));
+            c.Result = BuildNearby(p, kinds, c.Float("radius", 30f), c.Int("limit", 40), c.Str("name"));
+            yield break;
+        }
+
+        // Kept out of the coroutine body: large iterator methods trip this game's Mono JIT.
+        private static Dictionary<string, object> BuildNearby(Player p, HashSet<string> kinds, float radius, int limit, string name)
+        {
             var at = p.transform.position;
             var result = new Dictionary<string, object>();
-
             if (kinds.Contains("characters"))
             {
                 result["characters"] = Character.GetAllCharacters()
                     .Where(ch => ch != null && ch != p && Vector3.Distance(at, ch.transform.position) <= radius)
                     .Where(ch => name == null || Matches(ch, name))
                     .OrderBy(ch => Vector3.Distance(at, ch.transform.position)).Take(limit)
-                    .Select(ch => new
-                    {
-                        prefab = Utils.GetPrefabName(ch.gameObject),
-                        name = Loc(ch.m_name),
-                        player = ch.IsPlayer(),
-                        position = Json.Vec(ch.transform.position),
-                        distance = Json.R(Vector3.Distance(at, ch.transform.position)),
-                        health = Json.R(ch.GetHealth()),
-                        max_health = Json.R(ch.GetMaxHealth()),
-                        level = ch.GetLevel(),
-                        faction = ch.m_faction.ToString(),
-                        tamed = ch.IsTamed(),
-                        hostile = BaseAI.IsEnemy(p, ch),
-                    }).ToList();
+                    .Select(ch => DescribeCharacter(p, ch)).ToList();
             }
             if (kinds.Contains("items"))
             {
@@ -59,14 +49,7 @@ namespace AutoHeim
                     .Where(d => d != null && Vector3.Distance(at, d.transform.position) <= radius)
                     .Where(d => name == null || Matches(d, name))
                     .OrderBy(d => Vector3.Distance(at, d.transform.position)).Take(limit)
-                    .Select(d => new
-                    {
-                        prefab = Utils.GetPrefabName(d.gameObject),
-                        name = Loc(d.m_itemData.m_shared.m_name),
-                        stack = d.m_itemData.m_stack,
-                        position = Json.Vec(d.transform.position),
-                        distance = Json.R(Vector3.Distance(at, d.transform.position)),
-                    }).ToList();
+                    .Select(d => DescribeDrop(at, d)).ToList();
             }
             if (kinds.Contains("interactables"))
             {
@@ -74,14 +57,7 @@ namespace AutoHeim
                     .Where(t => !(t.mb is ItemDrop) && !(t.mb is Character))
                     .Where(t => name == null || Matches(t.mb, name))
                     .OrderBy(t => t.dist).Take(limit)
-                    .Select(t => new
-                    {
-                        prefab = Utils.GetPrefabName(t.mb.transform.root.gameObject),
-                        name = Describe(t.mb.gameObject),
-                        type = t.mb.GetType().Name,
-                        position = Json.Vec(t.mb.transform.position),
-                        distance = Json.R(t.dist),
-                    }).ToList();
+                    .Select(t => DescribeInteractable(t.mb, t.dist)).ToList();
             }
             if (kinds.Contains("pieces"))
             {
@@ -90,17 +66,31 @@ namespace AutoHeim
                 result["pieces"] = pieces
                     .Where(pc => name == null || Matches(pc, name))
                     .OrderBy(pc => Vector3.Distance(at, pc.transform.position)).Take(limit)
-                    .Select(pc => new
-                    {
-                        prefab = Utils.GetPrefabName(pc.gameObject),
-                        name = Loc(pc.m_name),
-                        position = Json.Vec(pc.transform.position),
-                        distance = Json.R(Vector3.Distance(at, pc.transform.position)),
-                    }).ToList();
+                    .Select(pc => DescribePiece(p, pc)).ToList();
             }
-            c.Result = result;
-            yield break;
+            return result;
         }
+
+        private static object DescribeDrop(Vector3 at, ItemDrop d) => new
+        {
+            prefab = Utils.GetPrefabName(d.gameObject),
+            name = Loc(d.m_itemData.m_shared.m_name),
+            stack = d.m_itemData.m_stack,
+            quality = d.m_itemData.m_quality,
+            position = Json.Vec(d.transform.position),
+            distance = Json.R(Vector3.Distance(at, d.transform.position)),
+            yaw = Yaw(d.transform),
+        };
+
+        private static object DescribeInteractable(MonoBehaviour mb, float dist) => new
+        {
+            prefab = Utils.GetPrefabName(mb.transform.root.gameObject),
+            name = Describe(mb.gameObject),
+            type = mb.GetType().Name,
+            position = Json.Vec(mb.transform.position),
+            distance = Json.R(dist),
+            yaw = Yaw(mb.transform),
+        };
 
         private static IEnumerator Env(Ctx c)
         {

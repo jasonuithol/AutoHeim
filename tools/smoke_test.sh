@@ -47,6 +47,7 @@ check "skills"            skills
 check "env"               env
 check "nearby"            nearby radius=30
 check "locations"         locations limit=3
+check "world_objects"     world_objects name=Greydwarf limit=3
 check "screenshot"        screenshot width=640
 check "screenshot camera" screenshot width=640 mode=camera hud=false
 check "record_audio"      record_audio seconds=1
@@ -68,6 +69,13 @@ check "use_item"          use_item item=Raspberry
 check "unequip"           unequip slot=right
 check "drop"              drop item=Raspberry count=1
 check "pickup"            pickup
+check "spawn chest"       console text="devcommands"
+check "spawn chest 2"     console text="spawn piece_chest_wood"
+check "give wood"         give item=Wood count=10
+check "container_put"     container_put item=Wood count=6
+check "container"         container
+check "container_take"    container_take item=Wood count=2
+check "nearby pieces"     nearby kinds=pieces,characters radius=10
 check "emote"             emote name=wave
 check "teleport near"     teleport x=30 z=30
 check "teleport far"      teleport x=1500 z=1500 timeout=90

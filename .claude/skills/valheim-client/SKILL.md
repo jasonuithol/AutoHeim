@@ -61,6 +61,10 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
 - Valheim worlds generate on first start: the first `start_world` on a new world takes longer.
 - `teleport` far away waits for the area to load and then puts the player on the ground.
 - `god` prevents damage but not stamina use; `heal` refills both. Attacks fail at 0 stamina.
+- Observation: `nearby` gives characters (position, facing, speed, health, stars, AI: alerted/target/
+  targeting_me/fleeing/sleeping), pieces (facing, health, support, material, creator), drops and
+  interactables, all within the loaded area. `world_objects name=...` searches every saved object in the
+  world (unloaded too) when hosting. `container` lists a chest's contents without opening it.
 - `fight` targets the nearest hostile (or `name=`), chases and swings each frame. Greydwarf shamans heal allies.
 - `locations` and `set_time` only work when hosting (`start_world`), not on a dedicated server.
 - `delete_character` / `delete_world` refuse to run outside the isolated save dir unless `force=true`.
@@ -76,6 +80,9 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
 | `characters` | List character profiles in the active save directory. |
 | `chat text=<message> [shout=false]` | Send a chat message as the player. |
 | `console text="<command line>"` | Run an in-game console command (e.g. 'devcommands', 'spawn Boar 2', 'tod 0.5'). Returns new console output. |
+| `container [name=<text>] [radius=5] \| container x=<x> z=<z>` | List the contents of the nearest chest/cart/ship container (optionally matching name, or nearest to a point). |
+| `container_put item=<prefab or name> [count=all] [name=<container>] [radius=5]` | Move items from your inventory into the nearest container. |
+| `container_take item=<prefab or name> [count=all] [name=<container>] [radius=5]` | Move items from the nearest container into your inventory. |
 | `create_character name=<name>` | Create a new character (local save, default starting items). Must be at the main menu. |
 | `create_world name=<name, 5+ chars> [seed=<seed>]` | Create a new local world (random seed if omitted). Must be at the main menu. |
 | `crouch [on=<bool>]` | Toggle (or set) crouch/sneak. |
@@ -123,4 +130,5 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
 | `unequip item=<prefab or name> \| slot=<right\|left\|chest\|legs\|helmet\|shoulder\|utility\|trinket\|ammo> \| all=true` | Unequip an item, a slot, or everything. |
 | `use_item item=<prefab or name>` | Use an item as if clicked in the inventory: eat food, drink a potion, toggle equip. |
 | `wait state=<menu\|ingame> [timeout=120]` | Block until the game reaches a state. 'ingame' also waits for the player to be ready (out of intro, area loaded). |
+| `world_objects name=<prefab text> [radius=<m>] [x=<x> z=<z>] [limit=50]` | Search every saved object in the world (loaded or not) by prefab name: position, facing, health, creator. Covers the whole world when hosting; on a dedicated server only the area synced to this client. |
 | `worlds` | List worlds in the active save directory. |

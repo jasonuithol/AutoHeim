@@ -9,7 +9,10 @@ client, so that Claude Code (or any script) can run the game without a human:
 - move, look, jump, crouch, dodge, attack, block, fight, interact, pick up
 - teleport anywhere and land safely on the ground
 - equip, unequip, use, drop, give and remove items
-- read player state, inventory, equipment, skills, surroundings, environment and world locations
+- read player state, inventory, equipment and skills
+- observe the world: time of day and weather; nearby creatures with facing, health, stars and AI state
+  (alerted, target, fleeing); building pieces with facing, health, structural support and creator;
+  chest contents; and a search over every saved object in the world, loaded or not
 - run console commands and chat
 - take screenshots and record the game's audio
 

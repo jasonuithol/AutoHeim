@@ -33,6 +33,7 @@ namespace AutoHeim
             RegisterControl();
             RegisterWorld();
             RegisterMedia();
+            RegisterObserve();
         }
 
         internal static void Add(string name, string usage, string help, CommandFn fn, float wait = 15f)
