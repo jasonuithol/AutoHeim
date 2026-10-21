@@ -294,6 +294,10 @@ def parse_value(v):
 # ---------------------------------------------------------------- setup / launch
 
 def setup(name, quiet=False):
+    run = read_run(name)
+    if run and proc_running(run.get("pid"), CLIENT_EXE):
+        # Overwriting a DLL that a live Mono process has loaded corrupts it (BadImageFormatException etc.).
+        sys.exit(f"instance '{name}' is running (pid {run['pid']}); 'autoheim quit' or 'autoheim kill' before setup/deploy")
     GAME = game_dir()
     src_core = GAME / "BepInEx/core"
     if not (src_core / "BepInEx.Preloader.dll").exists():
@@ -582,6 +586,19 @@ def main(argv):
         build()
         setup(name)
         return 0
+
+    if cmd == "quit":
+        # The API answers immediately; wait for the process to save and exit so the next
+        # command (e.g. launch) does not race it.
+        run = read_run(name)
+        resp = api(resolve_port(opts), "quit")
+        if resp.get("ok") and run and run.get("pid"):
+            deadline = time.time() + 90
+            while proc_running(run["pid"], CLIENT_EXE) and time.time() < deadline:
+                time.sleep(0.5)
+            resp["exited"] = not proc_running(run["pid"], CLIENT_EXE)
+        print(json.dumps(resp) if opts.get("raw") else json.dumps(resp, indent=2))
+        return 0 if resp.get("ok") else 1
 
     args = {}
     for p in params:

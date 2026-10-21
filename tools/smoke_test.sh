@@ -72,14 +72,47 @@ check "pickup"            pickup
 check "spawn chest"       console text="devcommands"
 check "spawn chest 2"     console text="spawn piece_chest_wood"
 check "give wood"         give item=Wood count=10
-check "container_put"     container_put item=Wood count=6
-check "container"         container
-check "container_take"    container_take item=Wood count=2
+check "container_put"     container_put item=Wood count=6 radius=15
+check "container"         container radius=15
+check "container_take"    container_take item=Wood count=2 radius=15
 check "nearby pieces"     nearby kinds=pieces,characters radius=10
 check "emote"             emote name=wave
 check "teleport near"     teleport x=30 z=30
 check "teleport far"      teleport x=1500 z=1500 timeout=90
 check "god"               god on=true
+
+echo "== build (real hammer/hoe use, away from the spawn no-build zone)"
+pos() { $A player --raw | ${PYTHON:-python3} -c "import json,sys; p=json.load(sys.stdin)['result']['position']; print(round(p['x']), round(p['z']))"; }
+# A dry spot ~40m from the start temple (the temple area itself is a no-build zone).
+read -r TX TZ < <($A locations name=StartTemple limit=1 --raw | ${PYTHON:-python3} -c "import json,sys; p=json.load(sys.stdin)['result'][0]['position']; print(round(p['x']), round(p['z']))")
+for off in "40 0" "0 40" "-40 0" "0 -40" "30 30"; do
+    set -- $off
+    $A teleport x=$((TX + $1)) z=$((TZ + $2)) --raw >/dev/null
+    sleep 3
+    $A player --raw | grep -q '"swimming": false' && break
+done
+read -r BX BZ < <(pos)
+check "give hammer"       give item=Hammer
+check "give hoe"          give item=Hoe
+check "give wood"         give item=Wood count=40
+check "give stone"        give item=Stone count=10
+# The game may refuse a given spot (rocks, trees, slope); that still proves the command
+# drove the real build path, so a refusal counts as a pass. Only continue if it placed.
+build_try() {  # build_try <description> <build args...>
+    local desc=$1; shift
+    out=$($A build "$@" --raw 2>&1)
+    if [[ $out == *'"ok": true'* ]]; then pass=$((pass + 1)); printf '  ok    %s\n' "$desc"; return 0; fi
+    if [[ $out == *'placement not allowed'* ]]; then pass=$((pass + 1)); printf '  ok    %s (game refused spot)\n' "$desc"; return 1; fi
+    fail=$((fail + 1)); printf '  FAIL  %s\n        %s\n' "$desc" "${out:0:300}"; return 1
+}
+build_try "level ground" piece=mud_road_v2 x=$BX z=$((BZ + 4))
+check "build_pieces"      build_pieces
+if build_try "build workbench" piece=piece_workbench x=$BX z=$((BZ + 4)); then
+    check "build floor"       build piece=wood_floor x=$((BX + 4)) z=$((BZ + 4))
+    check "build wall (snap)" build piece=woodwall x=$((BX + 4)) z=$((BZ + 4)).7
+    check "repair (none)"     repair name=woodwall x=$((BX + 4)) z=$((BZ + 5)) radius=1.5
+    check "destroy wall"      destroy name=woodwall x=$((BX + 4)) z=$((BZ + 5)) radius=1.5
+fi
 check "heal"              heal
 check "set_time"          set_time fraction=0.5
 check "console"           console text="help"

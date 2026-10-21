@@ -65,6 +65,14 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
   targeting_me/fleeing/sleeping), pieces (facing, health, support, material, creator), drops and
   interactables, all within the loaded area. `world_objects name=...` searches every saved object in the
   world (unloaded too) when hosting. `container` lists a chest's contents without opening it.
+- Building is real tool use: `build` equips the Hammer/Hoe, selects the piece, walks into reach, aims the
+  crosshair at the surface point and clicks; the game decides snapping, validity, materials and creator.
+  Rotation comes in 22.5° steps; `snap=false` = holding Alt. A refusal names the game's reason (slope,
+  overlapping rock/tree, no-build zone, missing workbench...); just try a nearby spot.
+  Tips: build away from the spawn stones (no-build zone); flatten first with the Hoe
+  (`build piece=mud_road_v2 x= z=`); fresh characters only unlock wood pieces after a workbench exists.
+  `destroy` / `repair` aim at the piece and use the hammer's remove / repair modes.
+  Building is a side feature for mod testing; don't burn time perfecting placements.
 - `fight` targets the nearest hostile (or `name=`), chases and swings each frame. Greydwarf shamans heal allies.
 - `locations` and `set_time` only work when hosting (`start_world`), not on a dedicated server.
 - `delete_character` / `delete_world` refuse to run outside the isolated save dir unless `force=true`.
@@ -77,6 +85,8 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
 |---|---|
 | `attack [secondary=false] [count=1] [interval=0.9] [hold=0]` | Primary or secondary attack with the current weapon. hold=seconds keeps the button held (bows, charged attacks). |
 | `block [seconds=1]` | Hold block for a duration. |
+| `build piece=<prefab or name> x=<x> z=<z> [y=<surface y>] [rotation=<deg>] [snap=true] [snap_point=-1] [approach=true] [timeout=30]` | Place a piece the way a player does: aim the crosshair at the surface point (x, y, z), rotate in 22.5° scroll steps, snap to nearby pieces unless snap=false (Alt), optional snap_point (Tab). Uses materials and records you as creator. |
+| `build_pieces [name=<text>] [all=false]` | Pieces your build tools (Hammer, Hoe, Cultivator...) can place: unlocked?, buildable right now?, materials, station. |
 | `characters` | List character profiles in the active save directory. |
 | `chat text=<message> [shout=false]` | Send a chat message as the player. |
 | `console text="<command line>"` | Run an in-game console command (e.g. 'devcommands', 'spawn Boar 2', 'tod 0.5'). Returns new console output. |
@@ -88,6 +98,7 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
 | `crouch [on=<bool>]` | Toggle (or set) crouch/sneak. |
 | `delete_character name=<name> [force=false]` | Delete a character. Refused outside an isolated save dir unless force=true. |
 | `delete_world name=<name> [force=false]` | Delete a world. Refused outside an isolated save dir unless force=true. |
+| `destroy [name=<text>] [x=<x> z=<z>] [radius=3] [approach=true] [timeout=30]` | Deconstruct the nearest matching piece with the hammer (middle-click): aims at it, removes it, resources drop. |
 | `dodge [forward=1] [right=0]` | Dodge roll in a direction relative to the view. |
 | `drop item=<prefab or name> [count=all]` | Drop items on the ground in front of the player. |
 | `emote name=<wave\|sit\|challenge\|cheer\|nonono\|thumbsup\|point\|...>` | Play an emote. |
@@ -119,6 +130,7 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
 | `quit` | Quit the game process cleanly (saves if in game). |
 | `record_audio [seconds=5] [path=<file.wav>]` | Record the game's final audio mix to a 16-bit WAV. Also returns peak/RMS levels. |
 | `remove_item item=<prefab or name> [count=all]` | Delete items from the inventory. |
+| `repair [name=<text>] [x=<x> z=<z>] [radius=3] [approach=true] [timeout=30]` | Repair the nearest matching damaged piece with the hammer's repair tool (needs its crafting station in range). |
 | `save` | Save the character (and the world when hosting). |
 | `screenshot [path=<file.png\|.jpg>] [width=<px>] [mode=screen\|camera] [hud=true] [quality=85]` | Capture the game view. width downscales (keeps aspect). mode=camera renders the 3D view without UI. |
 | `set_time fraction=<0..1>` | Set time of day (0=midnight, 0.25=dawn, 0.5=noon). Host only. |

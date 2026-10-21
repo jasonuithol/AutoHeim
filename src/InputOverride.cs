@@ -24,6 +24,8 @@ namespace AutoHeim
 
         internal static bool JumpPulse, AttackPulse, SecondaryPulse, DodgePulse, CrouchPulse, BlockPulse;
         internal static float AttackHoldUntil, SecondaryHoldUntil, BlockHoldUntil;
+        // Keep control (standing still, scripted look) without any action, e.g. while aiming a build.
+        internal static float HoldUntil;
 
         // Stuck tracking for waypoint walking.
         internal static int StuckEvents;
@@ -42,7 +44,8 @@ namespace AutoHeim
 
         internal static bool Active =>
             Waypoint.HasValue || Now < MoveUntil || JumpPulse || AttackPulse || SecondaryPulse || DodgePulse ||
-            CrouchPulse || BlockPulse || Now < AttackHoldUntil || Now < SecondaryHoldUntil || Now < BlockHoldUntil;
+            CrouchPulse || BlockPulse || Now < AttackHoldUntil || Now < SecondaryHoldUntil || Now < BlockHoldUntil ||
+            Now < HoldUntil;
 
         internal static void Clear()
         {
@@ -51,7 +54,7 @@ namespace AutoHeim
             Waypoint = null;
             Run = false;
             JumpPulse = AttackPulse = SecondaryPulse = DodgePulse = CrouchPulse = BlockPulse = false;
-            AttackHoldUntil = SecondaryHoldUntil = BlockHoldUntil = 0f;
+            AttackHoldUntil = SecondaryHoldUntil = BlockHoldUntil = HoldUntil = 0f;
             _steer = 0f;
         }
 

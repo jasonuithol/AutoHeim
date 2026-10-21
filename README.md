@@ -8,6 +8,8 @@ client, so that Claude Code (or any script) can run the game without a human:
 - host a world or join a (local) dedicated server
 - move, look, jump, crouch, dodge, attack, block, fight, interact, pick up
 - teleport anywhere and land safely on the ground
+- build, destroy and repair pieces through the real Hammer/Hoe (aiming, snapping, rotation steps,
+  materials, workbench range and creator all handled by the game)
 - equip, unequip, use, drop, give and remove items
 - read player state, inventory, equipment and skills
 - observe the world: time of day and weather; nearby creatures with facing, health, stars and AI state

@@ -34,6 +34,7 @@ namespace AutoHeim
             RegisterWorld();
             RegisterMedia();
             RegisterObserve();
+            RegisterBuild();
         }
 
         internal static void Add(string name, string usage, string help, CommandFn fn, float wait = 15f)
@@ -82,6 +83,8 @@ namespace AutoHeim
             if (p.IsDead()) { why = "player is dead"; return false; }
             if (p.InIntro()) { why = "player in intro"; return false; }
             if (p.IsTeleporting()) { why = "player teleporting"; return false; }
+            // e.g. the wake-up animation after spawning; the game ignores all input until it ends.
+            if (p.InCutscene()) { why = "player in a cutscene animation (input blocked)"; return false; }
             if (ZNetScene.instance != null && !ZNetScene.instance.IsAreaReady(p.transform.position))
             { why = "area not loaded"; return false; }
             return true;

@@ -337,21 +337,24 @@ namespace AutoHeim
                 InputOverride.FaceTowards(p, target.transform.position, includePitch: true);
             }
             string label = Describe(target);
+            Vector3 targetPos = target.transform.position;
+            bool isPickable = target.GetComponentInParent<Pickable>() != null;
             AccessTools.Method(typeof(Player), "Interact").Invoke(p, new object[] { target, c.Bool("hold", false), c.Bool("alt", false) });
             yield return new WaitForSecondsRealtime(0.5f);
             // Harvesting (berries, stones, mushrooms) spawns a drop that is only auto-collected when
             // standing right next to it; collect it so the result matches what a player would get.
             var picked = new List<string>();
-            if (target.GetComponentInParent<Pickable>() != null && target != null)
+            // The target may be gone now (looted tombstone, picked plant), so only use the saved position.
+            if (isPickable)
             {
                 foreach (var d in Object.FindObjectsOfType<ItemDrop>())
                 {
-                    if (d == null || Vector3.Distance(d.transform.position, target.transform.position) > 3f) continue;
+                    if (d == null || Vector3.Distance(d.transform.position, targetPos) > 3f) continue;
                     string drop = $"{Utils.GetPrefabName(d.gameObject)} x{d.m_itemData.m_stack}";
                     if (p.Pickup(d.gameObject, autoequip: false, autoPickupDelay: false)) picked.Add(drop);
                 }
             }
-            c.Result = new { interacted = label, position = Json.Vec(target.transform.position), attached = p.IsAttached(), picked_up = picked };
+            c.Result = new { interacted = label, position = Json.Vec(targetPos), still_exists = target != null, attached = p.IsAttached(), picked_up = picked };
         }
 
         private static IEnumerator Pickup(Ctx c)
@@ -395,9 +398,18 @@ namespace AutoHeim
             foreach (var col in Physics.OverlapSphere(at, radius, ~0, QueryTriggerInteraction.Collide))
             {
                 var inter = col.GetComponentInParent<Interactable>() as MonoBehaviour;
-                if (inter == null || !seen.Add(inter.gameObject)) continue;
+                if (inter == null || !seen.Add(inter.gameObject) || IsPlacementGhost(inter.gameObject)) continue;
                 yield return (inter, Vector3.Distance(at, inter.transform.position));
             }
+        }
+
+        /// The hammer's preview of the selected piece is a real object with the piece's components; ignore it.
+        internal static bool IsPlacementGhost(GameObject go)
+        {
+            var p = Player.m_localPlayer;
+            if (p == null) return false;
+            var ghost = Traverse.Create(p).Field<GameObject>("m_placementGhost").Value;
+            return ghost != null && go.transform.root == ghost.transform.root;
         }
 
         internal static bool Matches(Component mb, string query)
