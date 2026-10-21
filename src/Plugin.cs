@@ -27,7 +27,7 @@ namespace AutoHeim
     {
         public const string PluginId = "tarbaby.autoheim";
         public const string PluginName = "AutoHeim";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "0.2.0";
 
         internal static ManualLogSource Log;
         internal static bool Active;

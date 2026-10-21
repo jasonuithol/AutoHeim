@@ -106,3 +106,21 @@ Claude Code loads as the `valheim-client` skill.
 - A distant `Player.TeleportTo` parks the player at the requested height and only checks
   that a floor exists below, so without correction they fall and can die. `teleport` snaps
   them to solid ground and resets the fall tracker.
+- Replacing `AutoHeim.dll` while a client has it loaded corrupts the running process
+  (`BadImageFormatException: Method has zero rva`, string conversion errors), so
+  `setup`/`deploy` refuse while the instance is running.
+- After spawning, the player plays a wake-up animation tagged `cutscene`, and the game
+  ignores all input until it ends. Readiness (`wait`, `start_world`, `join_server`) includes
+  it, and tool clicks wait for the game to accept input.
+- Hammer clicks aren't input events: the game compares `m_placePressedTime` /
+  `m_removePressedTime` with `Time.time`. Setting those (after aiming the camera ray) runs
+  the game's own place/remove/repair code. The placement ghost is a live copy of the piece,
+  so observation code must skip it.
+- Objects you interact with can disappear (looted tombstones, picked plants); read their
+  data before interacting.
+- `PlatformPrefs` (resolution, last character, volume...) is shared with your normal game
+  through Steam cloud, so the isolated client never saves it.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
