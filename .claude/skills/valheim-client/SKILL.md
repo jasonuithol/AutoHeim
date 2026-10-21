@@ -5,8 +5,8 @@ description: Launch and drive an automated Valheim game client (AutoHeim) - star
 
 # Driving the Valheim client with AutoHeim
 
-Everything goes through one CLI: `tools/autoheim` in the AutoHeim repo
-(`/home/jason/Projects/AutoHeim`). It prints JSON; exit code is 0 when `"ok": true`.
+Everything goes through one CLI, `tools/autoheim`, at the root of the AutoHeim repo
+(the repo this skill lives in). Run it from there. It prints JSON; the exit code is 0 when `"ok": true`.
 
 The client runs **isolated**: its own BepInEx profile
 (`~/.local/share/AutoHeim/instances/<name>/BepInEx`), its own saves
@@ -16,7 +16,7 @@ shared Valheim preferences. The human's characters/worlds/settings are not touch
 ## Typical session
 
 ```bash
-A=/home/jason/Projects/AutoHeim/tools/autoheim
+A=tools/autoheim                            # from the repo root
 $A launch                                   # blocks until the main menu is up (~20-40s); intros are skipped
 $A characters; $A worlds                    # what exists already
 $A create_character name=Botty              # 3-15 chars
