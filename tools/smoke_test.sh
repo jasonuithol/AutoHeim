@@ -77,6 +77,9 @@ check "container"         container radius=15
 check "container_take"    container_take item=Wood count=2 radius=15
 check "nearby pieces"     nearby kinds=pieces,characters radius=10
 check "emote"             emote name=wave
+check "button inventory"  button name=Inventory
+check "ui"                ui
+check "key escape"        key name=Escape
 check "teleport near"     teleport x=30 z=30
 check "teleport far"      teleport x=1500 z=1500 timeout=90
 check "god"               god on=true

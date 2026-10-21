@@ -7,6 +7,8 @@ client, so that Claude Code (or any script) can run the game without a human:
 - create, delete and select characters and worlds
 - host a world or join a (local) dedicated server
 - move, look, jump, crouch, dodge, attack, block, fight, interact, pick up
+- press any key or input button as the game reads it (works unfocused), click UI buttons by label,
+  type into text prompts, list what is on screen
 - teleport anywhere and land safely on the ground
 - build, destroy and repair pieces through the real Hammer/Hoe (aiming, snapping, rotation steps,
   materials, workbench range and creator all handled by the game)

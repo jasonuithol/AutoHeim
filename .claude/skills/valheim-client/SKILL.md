@@ -51,6 +51,7 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
   scripted action is running. `stop` releases everything.
 - To look at the game, take a `screenshot` (use `width=` 640-960 to keep it small) and Read
   the returned path. `mode=camera hud=false` renders the 3D view only (no post-processing).
+- Keys and UI: `key` and `button` inject presses through ZInput (what the game and mods read), so they work unfocused; `button name=Use` is E on what you look at (aim with `look` first). `ui` lists clickable labels; `click label=` and `type text=` answer panels and text prompts.
 - `record_audio` returns `peak`/`rms`/`silent`, so you can tell whether sound played without listening.
 - `console text="..."` runs any in-game console command; cheats need `console text=devcommands` first.
 - Problems: `$A status` (state + `not_ready_reason`), `$A log contains=Error`, `$A popups dismiss=true`,
@@ -113,6 +114,11 @@ then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then re
 | `heal` | Restore health and stamina to full. |
 | `help [name=<cmd>]` | List commands, or show one command's usage. |
 | `hotbar slot=<1-8>` | Use the item in a hotbar slot. |
+| `key name=<KeyCode: Space\|Escape\|Return\|E\|M\|Z\|Alpha1\|F5\|...> [hold=0]` | Press a keyboard key as the game (and mods) read it through ZInput: down for one frame, held for hold= seconds, then up. Works unfocused. |
+| `button name=<Use\|Map\|Inventory\|Jump\|Attack\|SecondaryAttack\|Block\|Hide\|Crouch\|...> [hold=0]` | Press one of the game's input buttons (an action, whatever key it is bound to). Same timing as 'key'. |
+| `click label=<text> [index=0]` | Click a visible, interactable UI button whose label is that text (exact, else contained; case-insensitive). Lists the buttons when none matches. |
+| `type text=<text> [enter=true]` | Type into the open text box (the game's text prompt, or the focused input field) and submit it with Enter. |
+| `ui` | Visible UI: the clickable buttons' labels, input fields, and the text box prompt if one is open. |
 | `interact [name=<text>] [radius=3] [alt=false] [hold=false]` | Interact (E) with the hovered object, or the nearest interactable whose name/prefab contains 'name'. |
 | `inventory` | Inventory contents with prefab names, stacks, equipped flags and durability. |
 | `join_server address=<host:port> [character=<name>] [password=] [wait=true] [timeout=240]` | Connect to a (local) dedicated server. wait=true blocks until the player is ready. |

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 - 2026-10-21
+
+- `key` and `button`: press a keyboard key (Unity KeyCode) or one of the game's input buttons
+  (Use, Map, Inventory, Jump ...), optionally held. Injected where the game reads input (ZInput's
+  GetKey/GetKeyDown/GetKeyUp and GetButton/GetButtonDown/GetButtonUp), so menus, panels and mods
+  that poll keys see them, with the window unfocused.
+- `click label=`: click a visible UI button by its label (lists the visible ones on a miss).
+- `type text=`: type into the game's text prompt (or the focused input field) and press Enter.
+- `ui`: the visible buttons, input fields and text prompt.
+
 ## 0.2.0 - 2026-10-21
 
 - Building through the real Hammer/Hoe: `build`, `destroy`, `repair`, `build_pieces`

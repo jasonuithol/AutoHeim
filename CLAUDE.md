@@ -13,7 +13,7 @@ changing it.
   `tools/smoke_test.sh` (it launches the client if needed, and uses a throwaway server).
 - Command layout: `Commands.cs` (registry, state, general), `MenuCommands.cs`, `PlayerCommands.cs`,
   `ControlCommands.cs` (movement/combat/interact), `WorldCommands.cs`, `ObserveCommands.cs`
-  (detailed describers, containers, world search), `BuildCommands.cs`, `MediaCommands.cs`.
+  (detailed describers, containers, world search), `BuildCommands.cs`, `MediaCommands.cs`, `UiCommands.cs` (keys and buttons through ZInput, UI clicks, typing).
   `InputOverride.cs` owns all synthetic input; `Patches.cs` holds the unattended-client patches.
 - New command: add it to a `Register*` method, add a line to `tools/smoke_test.sh`, and
   regenerate the command table in the skill from `tools/autoheim help`. Bump `PluginVersion`
