@@ -7,11 +7,13 @@ description: Launch and drive an automated Valheim game client (AutoHeim) - star
 
 Everything goes through one CLI, `tools/autoheim`, at the root of the AutoHeim repo
 (the repo this skill lives in). Run it from there. It prints JSON; the exit code is 0 when `"ok": true`.
+On Windows use `tools\autoheim.cmd` (or `py tools\autoheim.py`) wherever `$A` appears below.
 
 The client runs **isolated**: its own BepInEx profile
-(`~/.local/share/AutoHeim/instances/<name>/BepInEx`), its own saves
-(`~/.local/share/AutoHeim/saves`), its own Unity log, and it never writes the
+(`<home>/instances/<name>/BepInEx`), its own saves (`<home>/saves`), its own Unity log, and it never writes the
 shared Valheim preferences. The human's characters/worlds/settings are not touched.
+`<home>` is `~/.local/share/AutoHeim` on Linux and `%LOCALAPPDATA%\AutoHeim` on Windows;
+`$A paths` prints every location, including the detected game install.
 
 ## Typical session
 
@@ -34,7 +36,7 @@ server (own save dir, port 2476, password `secret12`) and waits until it accepts
 players; then `$A join_server address=127.0.0.1:2476 password=secret12 character=Botty`.
 `$A server-stop` when done. For the human's real server, ask before connecting.
 
-Testing a mod: copy its DLL into `~/.local/share/AutoHeim/instances/default/BepInEx/plugins/`,
+Testing a mod: copy its DLL into `<home>/instances/default/BepInEx/plugins/`,
 then `$A kill && $A launch`. After changing AutoHeim itself: `$A deploy` then relaunch.
 
 ## Conventions

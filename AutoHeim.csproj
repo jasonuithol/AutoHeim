@@ -10,6 +10,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <ValheimDir Condition="'$(VALHEIM_CLIENT_DIR)' != ''">$(VALHEIM_CLIENT_DIR)</ValheimDir>
+    <!-- tools/autoheim passes -p:ValheimDir=<detected install>; these are fallbacks for a bare `dotnet build`. -->
+    <ValheimDir Condition="'$(ValheimDir)' == '' And '$(OS)' == 'Windows_NT'">C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimDir>
     <ValheimDir Condition="'$(ValheimDir)' == ''">$(HOME)/.steam/steam/steamapps/common/Valheim</ValheimDir>
     <BepInExDir>$(ValheimDir)/BepInEx</BepInExDir>
     <ManagedDir>$(ValheimDir)/valheim_Data/Managed</ManagedDir>

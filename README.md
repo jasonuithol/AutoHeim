@@ -21,13 +21,13 @@ tools/autoheim (Python CLI) ──HTTP/JSON──▶ AutoHeim.dll (BepInEx plugi
         │ launches with its own BepInEx         ├─ Runner:    runs each request as a main-thread coroutine
         │ profile + save dir via Doorstop       ├─ InputOverride: replaces PlayerController input with scripted controls
         ▼                                       └─ Patches:   skip intros/Valkyrie/tutorials, never save shared prefs
-~/.local/share/AutoHeim/instances/<name>/
+<home>/instances/<name>/      (<home> = ~/.local/share/AutoHeim or %LOCALAPPDATA%\AutoHeim)
 ```
 
 - **Isolation.** `autoheim launch` points Doorstop at a per-instance copy of BepInEx
-  (`~/.local/share/AutoHeim/instances/<name>/BepInEx`), so only AutoHeim (plus whatever
+  (`<home>/instances/<name>/BepInEx`), so only AutoHeim (plus whatever
   you drop in that profile's `plugins/`) loads. Characters and worlds live in
-  `~/.local/share/AutoHeim/saves`. The Unity log goes to the instance directory, and
+  `<home>/saves`. The Unity log goes to the instance directory, and
   writes to the shared Valheim preferences are suppressed. Your normal game, mods,
   characters and settings are untouched, and the automated client can run alongside it.
 - **Dormant by default.** If the DLL is installed into a normal profile, it does nothing
@@ -41,16 +41,35 @@ tools/autoheim (Python CLI) ──HTTP/JSON──▶ AutoHeim.dll (BepInEx plugi
 
 ## Requirements
 
-- Valheim client with BepInExPack installed at `~/.steam/steam/steamapps/common/Valheim`
-  (override with `VALHEIM_CLIENT_DIR`)
+- Linux or Windows
+- Valheim client with [BepInExPack_Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/)
+  installed into the game folder
 - Steam running
-- .NET SDK (to build), Python 3.8+
-- Optional: Valheim dedicated server for `autoheim server-start` (`VALHEIM_SERVER_DIR`)
+- .NET SDK (to build) and Python 3.8+
+- Optional: Valheim Dedicated Server (Steam > Library > Tools) for `autoheim server-start`
+
+The game and dedicated-server installs are found automatically in any Steam library:
+- **Windows:** the Steam path from the registry plus every library listed in
+  `libraryfolders.vdf`.
+- **Linux:** `~/.steam/steam`, `~/.local/share/Steam`, Debian and Flatpak Steam, plus their
+  extra libraries.
+
+Override with `VALHEIM_CLIENT_DIR` / `VALHEIM_SERVER_DIR`. `autoheim paths` shows what was found.
+
+| | Linux | Windows |
+|---|---|---|
+| Run the CLI | `tools/autoheim ...` | `tools\autoheim.cmd ...` or `py tools\autoheim.py ...` |
+| State, profiles, saves | `~/.local/share/AutoHeim` | `%LOCALAPPDATA%\AutoHeim` |
+| How BepInEx is pointed at the profile | Doorstop env vars + `LD_PRELOAD` | Doorstop command-line switches (v3 or v4, auto-detected) |
+| Smoke test | `tools/smoke_test.sh` | `PYTHON=py tools/smoke_test.sh` in Git Bash |
+
+On Windows, `server-stop` force-ends the throwaway server: a detached server has no console
+to receive Ctrl+C, so its world isn't saved on exit. That's fine for a test world.
 
 ## Usage
 
 ```bash
-dotnet build -c Release              # or let `autoheim setup`/`launch` build it
+tools/autoheim setup                 # builds against your detected install, creates the profile
 tools/autoheim launch                # isolated client at the main menu
 tools/autoheim create_character name=Botty
 tools/autoheim create_world name=TestWorld

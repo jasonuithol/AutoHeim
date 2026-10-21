@@ -6,9 +6,10 @@
 #
 #   tools/smoke_test.sh            # full run, including the dedicated-server join
 #   SKIP_SERVER=1 tools/smoke_test.sh
+#   PYTHON=py tools/smoke_test.sh  # Windows (Git Bash)
 set -u
 cd "$(dirname "$0")/.."
-A=tools/autoheim
+A="${PYTHON:-python3} tools/autoheim.py"
 CHAR=SmokeBot
 WORLD=SmokeWorld
 pass=0; fail=0
